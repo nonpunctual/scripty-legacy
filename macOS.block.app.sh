@@ -39,13 +39,26 @@ plstpth="/Library/LaunchDaemons/com.$prcidnt.plist"
 scptpth="/opt/$prcidnt.sh"
 
 
+# --remove: unload the daemon & delete both files, then exit
+if [ "$1" = "--remove" ]
+then
+	/bin/launchctl bootout system/"$prcidnt" 2>/dev/null
+	/bin/rm -f "$plstpth" "$scptpth"
+	printf "\nRemoved %s and %s.\n" "$plstpth" "$scptpth"; exit
+fi
+
+
+# unload any existing daemon so re-running this script is safe
+/bin/launchctl bootout system/"$prcidnt" 2>/dev/null
+
+
 # write out blocking script
 /bin/cat << EOF > "$scptpth"
 #!/bin/sh
 
 if /usr/bin/pgrep -ail "$blckapp"
 then
-    /usr/bin/pkill -ail "$blckapp"
+    /usr/bin/pkill -9 -ail "$blckapp"
     /usr/bin/osascript -e "display dialog \"${apsctxt}\" buttons {\"OK\"} default button 1 with title \"${apscttl}\" with icon file \"System:Library:CoreServices:CoreTypes.bundle:Contents:Resources:AlertStopIcon.icns\""
 fi
 EOF
@@ -70,6 +83,8 @@ EOF
       <true/>
     <key>KeepAlive</key>
       <true/>
+    <key>ThrottleInterval</key>
+      <integer>3</integer>
   </dict>
 </plist>
 EOF
