@@ -4,6 +4,7 @@
 # trap read debug
 
 # macOS.block.app.sh @2024 Fleet Device Management
+# usage: macOS.block.app.sh [--remove]  (--remove uninstalls the daemon & deletes its files)
 
 
 # check for root execution
@@ -49,7 +50,7 @@ fi
 
 
 # unload any existing daemon so re-running this script is safe
-/bin/launchctl bootout system/"$prcidnt" 2>/dev/null
+/bin/launchctl bootout system/"$prcidnt" 2>/dev/null; /bin/sleep 2
 
 
 # write out blocking script
