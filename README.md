@@ -26,3 +26,32 @@ Helpful & unhelpful scripts.
 - **[ubuntu.dconf.sh](ubuntu.dconf.sh)**: Locks down GNOME privacy/security settings (screen lock, idle timeout, location, recent files, trash) system-wide and machine-locked via dconf, so users can't override them with `gsettings`.
 - **[ubuntu.privacy.security.sh](ubuntu.privacy.security.sh)**: Same GNOME privacy/security settings as ubuntu.dconf.sh, but applied per-user via `gsettings` (overridable), plus disables Tracker3 file indexing and Apport crash reporting.
 - **[update.marketing.assets.sh](update.marketing.assets.sh)**: Pulls article metadata from the fleetdm/fleet GitHub repo and prints categorized markdown tables (articles, case studies, guides, etc.) for tracking marketing content.
+
+## Other stuff
+
+Some my ideas in scripts & code aren't posted here. They're in posts on [nonpunctual.org](https://www.nonpunctual.org/):
+
+- [A Haiku On Regular Expressions](https://www.nonpunctual.org/posts/a-haiku-on-regular-expressions/)
+- [A Light Unto My Xpath](https://www.nonpunctual.org/posts/a-light-unto-my-xpath/)
+- [Apple CIDR](https://www.nonpunctual.org/posts/apple-cidr/)
+- ["Automating" the Mac Evaluation Utility.app (MEU)](https://www.nonpunctual.org/posts/automating-the-mac-evaluation-utility.app-meu/)
+- [Collect Year From Mac Marketing Model Name](https://www.nonpunctual.org/posts/collect-year-from-mac-marketing-model-name/)
+- [GNU (New?) du Binary Option In macOS 12 Monterey](https://www.nonpunctual.org/posts/du-binary-option-in-macos-12-monterey/)
+- [Dynamic Token Of Static Appreciation](https://www.nonpunctual.org/posts/dynamic-token-of-static-appreciation/)
+- [Firefoxy](https://www.nonpunctual.org/posts/firefoxy/)
+- [Googalogically Speaking](https://www.nonpunctual.org/posts/googalogically-speaking/)
+- [Interactively Create Hugo Content With Frontmatter](https://www.nonpunctual.org/posts/interactively-create-hugo-content-with-frontmatter/)
+- [I've Got the Power](https://www.nonpunctual.org/posts/ive-got-the-power/)
+- [JSON & the Arg-nauts](https://www.nonpunctual.org/posts/json--the-arg-nauts/)
+- [Migration "Assistant"](https://www.nonpunctual.org/posts/migration-assisstant/)
+- [No Free Space For Complexity](https://www.nonpunctual.org/posts/no-free-space-for-complexity/)
+- [Removing System Roots (is probably a bad idea)](https://www.nonpunctual.org/posts/removing-system-roots-is-probably-a-bad-idea/)
+- [Remember That Time You Wanted All Of Your Self Service Display Names To Actually Match Your Policy Names?](https://www.nonpunctual.org/posts/self-service-display-names/)
+- [Super Size Me](https://www.nonpunctual.org/posts/super-size-me/)
+- [Surfin' Safari](https://www.nonpunctual.org/posts/surfin-safari/)
+- [The Date Command Is Pretty Hard To Use](https://www.nonpunctual.org/posts/the-date-command-is-pretty-hard-to-use/)
+- [The networkQuality Is Not Strained](https://www.nonpunctual.org/posts/the-networkquality-is-not-strained/)
+- [Thinking About Extension Attributes](https://www.nonpunctual.org/posts/thinking-about-extension-attributes/)
+- [Unify Your macOS Terminal Command History](https://www.nonpunctual.org/posts/unify-your-macos-terminal-command-history/)
+- [UTI: Uncomfortable In Any Context](https://www.nonpunctual.org/posts/uti-uncomfortable-in-any-context/)
+- [Yule Logging](https://www.nonpunctual.org/posts/yule-logging/)
