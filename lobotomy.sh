@@ -23,12 +23,9 @@ exclude_projects=(
 
 
 # delete top-level Claude Code state and scratch dirs
-/bin/rm -f -r \
-    ~/.claude/history.jsonl \
-    ~/.claude/.last-cleanup \
-    ~/.claude/plugins/.last_inuse_sweep \
-    /private/tmp/cc-socks/ \
-    /private/tmp/claude-501/
+/bin/rm -rf \
+    ~/.claude/{daemons/,daemon.lock,daemon.log,history.jsonl,.last-cleanup,plugins/.last_inuse_sweep} \
+    /private/tmp/{cc-socks/,claude-501/}
 
 /usr/bin/find ~/.claude/backups -mindepth 1 -maxdepth 1 -name ".[^.]*" -exec /bin/rm -f -r {} + 2>/dev/null
 
