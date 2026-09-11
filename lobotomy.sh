@@ -8,6 +8,7 @@
 
 # populate Claude Code project dir exclusions
 exclude_projects=(
+    -Users-Shared-aeropuerto
     -Users-Shared-rotten
     -Users-Shared-fleet-mcp-plus
     -Users-Shared-network-health-extension
@@ -29,7 +30,7 @@ exclude_projects=(
     /private/tmp/cc-socks/ \
     /private/tmp/claude-501/
 
-/usr/bin/find ~/.claude/backups -mindepth 1 -maxdepth 1 -name ".[^.]*" -exec rm -f -r {} + 2>/dev/null
+/usr/bin/find ~/.claude/backups -mindepth 1 -maxdepth 1 -name ".[^.]*" -exec /bin/rm -f -r {} + 2>/dev/null
 
 for i in agents debug downloads file-history image-cache jobs paste-cache plans session-env sessions shell-snapshots telemetry
 do
@@ -46,5 +47,5 @@ do
             */"$excluded"/ ) continue 2 ;;
         esac
     done
-    /usr/bin/find "$project" -mindepth 1 -maxdepth 1 ! -name "memory" -exec rm -f -r {} +
+    /usr/bin/find "$project" -mindepth 1 -maxdepth 1 ! -name "memory" -exec /bin/rm -f -r {} +
 done

@@ -3,17 +3,34 @@
 # Build & sign a macOS distribution installer from a payload folder using pkgbuild
 # & productbuild's --sign flags.
 
+# Requires build.component.pkg.sh in this same directory: the component-pkg step below
+# shells out to it (rather than calling pkgbuild directly) so both scripts share one
+# pkgbuild invocation. Don't move or rename either script relative to the other, and
+# don't run this workflow with a stale copy of build.component.pkg.sh elsewhere on
+# $PATH -- the call is by sibling path, not by $PATH lookup, so that shouldn't happen,
+# but keep both scripts' positional-argument orders in sync with the call in the
+# "component package" section below if you ever change either one.
+
 # Usage:
-#   ./build.distribution.pkg.sh </path/to/folder/> </path/to/scripts/> <package identifier> <package version> <"Developer ID Installer: Name (TEAMID)"> <path/to/output.pkg> </path/to/distribution.xml> <notarization-profile> <wrap-in-dmg> <"Developer ID Application: Name (TEAMID)">
+#   ./build.distribution.pkg.sh </path/to/distribution.xml> </path/to/folder/> </path/to/resources/> </path/to/scripts/> <path/to/output.pkg> <package identifier> <package version> <"Developer ID Installer: Name (TEAMID)"> <"Developer ID Application: Name (TEAMID)"> <notarization-profile> <wrap-in-dmg> </path/to/component-plist>
 
 # Workflow:
-#   app-signing > pkgbuild with package-signing > synthesize distribution.xml (if needed) >
-#   productbuild with package-signing > verify > notarization (optional) > wrap in .dmg (optional).
+#   app-signing > build.component.pkg.sh (pkgbuild with package-signing) > synthesize
+#   distribution.xml (if needed) > productbuild with package-signing > verify >
+#   notarization (optional) > wrap in .dmg (optional).
 
 # Options can be supplied on the CLI when executing or populated in the variables at the
 # top of the script.
 
 # scripts is optional -- leave blank to build the component package without a --scripts payload.
+
+# resources is optional -- leave blank to build the distribution package without a --resources
+# payload (no welcome/readme/license/conclusion text panes will be shown by Installer.app).
+
+# component-plist is optional -- leave blank to let pkgbuild infer bundle relocation/versioning
+# behavior on its own. Generate one via `pkgbuild --analyze --root <folder>` and edit as needed
+# (e.g. set BundleIsRelocatable to false for a bundle that must always install to a fixed path,
+# regardless of any same-identifier bundle Launch Services has registered elsewhere on disk).
 
 # To use this script Apple Developer identities must already be installed in your keychain.
 # To install identity certs go to Xcode.app -> Settings -> Accounts -> Manage Certificates,
@@ -37,16 +54,18 @@
 
 
 # user variables
+path_to_distribution_xml=''
 path_to_folder=''
+path_to_resources=''
 path_to_scripts=''
+path_to_pkg=''
 package_identifier=''
 package_version=''
 developer_id=''
-path_to_pkg=''
-path_to_distribution_xml=''
+app_cert=''
 notarization_profile=''
 wrap_in_dmg=''
-app_cert=''
+path_to_component_plist=''
 
 
 ###############################
@@ -63,7 +82,7 @@ errapcr(){ printf '\nerror: app-cert "%s" not found in keychain.\n' "$appcrt" >&
 errincr(){ printf '\nerror: installer-cert "%s" not found in keychain.\n' "$inscrt" >&2; }
 errcert(){ printf '\nerror: both a Developer ID Application & a Developer ID Installer certificate are required in the keychain.\n' >&2; }
 errcsgn(){ printf '\nerror: codesigning "%s" failed.\n' "$app" >&2; }
-errpkgb(){ printf '\nerror: pkgbuild failed.\n' >&2; }
+errpkgb(){ printf '\nerror: build.component.pkg.sh (component package) failed.\n' >&2; }
 errsynt(){ printf '\nerror: synthesizing %s failed.\n' "$distxm" >&2; }
 errprod(){ printf '\nerror: productbuild failed.\n' >&2; }
 errntry(){ printf '\nerror: notarization failed.\n' >&2; }
@@ -91,16 +110,18 @@ resolve_cert(){
 	fi
 }
 
-rootdr="${1:-$path_to_folder}"
-scptdr="${2:-$path_to_scripts}"
-idntfr="${3:-$package_identifier}"
-vrsion="${4:-$package_version}"
-inscrt="${5:-$developer_id}"
-outnam="${6:-$path_to_pkg}"
-distxm="${7:-$path_to_distribution_xml}"
-notprf="${8:-$notarization_profile}"
-wrpdmg="${9:-$wrap_in_dmg}"
-appcrt="${10:-$app_cert}"
+distxm="${1:-$path_to_distribution_xml}"
+rootdr="${2:-$path_to_folder}"
+rsrcdr="${3:-$path_to_resources}"
+scptdr="${4:-$path_to_scripts}"
+outnam="${5:-$path_to_pkg}"
+idntfr="${6:-$package_identifier}"
+vrsion="${7:-$package_version}"
+inscrt="${8:-$developer_id}"
+appcrt="${9:-$app_cert}"
+notprf="${10:-$notarization_profile}"
+wrpdmg="${11:-$wrap_in_dmg}"
+cplst="${12:-$path_to_component_plist}"
 
 
 # error handling
@@ -143,7 +164,7 @@ finpkg="$outnam.pkg"
 while IFS= read -r -d '' app
 do
 	echo "codesigning $app..."
-	if ! /usr/bin/codesign -s "$appsig" --timestamp -f "$app"
+	if ! /usr/bin/codesign -s "$appsig" --timestamp --options runtime -f "$app"
 	then
 		errcsgn; exit 1
 	fi
@@ -152,13 +173,10 @@ done < <(/usr/bin/find "$rootdr" -name '*.app' -print0)
 
 # component package
 echo "building component package..."
-pkgargs=(--identifier "$idntfr" --version "$vrsion" --root "$rootdr" --sign "$signid")
-if [[ -n "$scptdr" ]]
-then
-	pkgargs+=(--scripts "$scptdr")
-fi
+scriptdr="$(cd "$(/usr/bin/dirname "$0")" && /bin/pwd)"
+cmpargs=("$rootdr" "$scptdr" "$idntfr" "$vrsion" "$signid" "$cmppkg" "$cplst")
 
-if ! /usr/bin/pkgbuild "${pkgargs[@]}" "$cmppkg"
+if ! "$scriptdr/build.component.pkg.sh" "${cmpargs[@]}"
 then
 	errpkgb; exit 1
 fi
@@ -174,7 +192,13 @@ fi
 
 # distribution package
 echo "building distribution package..."
-if ! /usr/bin/productbuild --distribution "$distxm" --package-path . --sign "$signid" "$finpkg"
+prodargs=(--distribution "$distxm" --package-path . --sign "$signid")
+if [[ -n "$rsrcdr" ]]
+then
+	prodargs+=(--resources "$rsrcdr")
+fi
+
+if ! /usr/bin/productbuild "${prodargs[@]}" "$finpkg"
 then
 	errprod; exit 1
 fi

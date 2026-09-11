@@ -2,8 +2,16 @@
 
 # Build & sign a macOS component .pkg from a payload folder using pkgbuild's --sign flag.
 
+# Standalone use: run this script directly for a one-off component .pkg.
+# Called from build.distribution.pkg.sh: that script shells out to this one (same
+# directory, found via its own path) for the component-pkg step of a full distribution
+# build, and forwards its own root/scripts/identifier/version/installer-cert/component-plist
+# arguments straight through. Both scripts must stay in the same directory for that call
+# to resolve. Keep this script's positional-argument order and script filename stable, or
+# update the call site in build.distribution.pkg.sh's "component package" section too.
+
 # Usage:
-#   ./build.component.pkg.sh </path/to/folder> </path/to/scripts/> <package identifier> <package version> <"Developer ID Installer: Name (TEAMID)"> <path/to/.pkg>
+#   ./build.component.pkg.sh </path/to/folder> </path/to/scripts/> <package identifier> <package version> <"Developer ID Installer: Name (TEAMID)"> <path/to/.pkg> </path/to/component-plist>
 
 # Options can be supplied on the CLI when executing or populated in the variables at the
 # top of the script.
@@ -17,6 +25,9 @@
 
 # output.pkg defaults to "<folder-basename>.pkg" in the current directory.
 # scripts is optional -- leave blank to build without a --scripts payload.
+# component-plist is optional -- leave blank to let pkgbuild infer bundle relocation/versioning
+# behavior on its own. Generate one via `pkgbuild --analyze --root <folder>` and edit as needed
+# (e.g. set BundleIsRelocatable to false for a bundle that must always install to a fixed path).
 
 
 # user variables
@@ -26,6 +37,7 @@ package_identifier=''
 package_version=''
 developer_id=''
 path_to_pkg=''
+path_to_component_plist=''
 
 
 ###############################
@@ -50,6 +62,7 @@ pkgidnt="${3:-$package_identifier}"
 pkgvers="${4:-$package_version}"
 pkgsign="${5:-$developer_id}"
 pkgpath="${6:-$path_to_pkg}"
+pkgcplst="${7:-$path_to_component_plist}"
 
 
 # error handling
@@ -75,6 +88,10 @@ pkgargs=(--root "$pkgfldr" --identifier "$pkgidnt" --version "$pkgvers" --sign "
 if [ -n "$pkgscpt" ]
 then
     pkgargs+=(--scripts "$pkgscpt")
+fi
+if [ -n "$pkgcplst" ]
+then
+    pkgargs+=(--component-plist "$pkgcplst")
 fi
 
 if ! /usr/bin/pkgbuild "${pkgargs[@]}" "$pkgpath"
