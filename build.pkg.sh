@@ -8,7 +8,7 @@
 
 # Usage:
 #   ./build.pkg.sh (--component|-C) </path/to/folder> </path/to/scripts/> <package identifier> <package version> <"Developer ID Installer: Name (TEAMID)"> <path/to/output.pkg> </path/to/component-plist>
-#   ./build.pkg.sh (--distribution|-D) </path/to/distribution.xml> </path/to/folder/> </path/to/resources/> </path/to/scripts/> <path/to/output-name> <package identifier> <package version> <"Developer ID Installer: Name (TEAMID)"> <"Developer ID Application: Name (TEAMID)"> <notarization-profile> <wrap-in-dmg> </path/to/component-plist>
+#   ./build.pkg.sh (--distribution|-D) </path/to/distribution.xml> </path/to/folder/> </path/to/resources/> </path/to/scripts/> <path/to/output-name> <package identifier> <package version> <"Developer ID Installer: Name (TEAMID)"> <"Developer ID Application: Name (TEAMID)"> <notarization-profile> <wrap-in-dmg> </path/to/component-plist> </path/to/entitlements.plist>
 
 # The mode flag must come first. Everything after it is positional, in the order shown
 # above for that mode -- the two modes do NOT share one positional order.
@@ -50,6 +50,12 @@
 
 # wrap-in-dmg (--distribution only): any non-blank value wraps the built package in a .dmg.
 
+# entitlements.plist (--distribution only) is optional -- leave blank to codesign each
+# .app found in the folder without --entitlements (the prior default). When set, every
+# .app codesigned during packaging gets --entitlements <path>. Needed for anything an
+# app's own build step already signed with entitlements (e.g. Location Services), since
+# this script's own re-sign otherwise silently drops them.
+
 # app-cert / developer-id (--distribution only): which identity to use when more than
 # one Developer ID Application / Installer certificate is in the keychain. Required if
 # the keychain has more than one of either.
@@ -58,6 +64,7 @@
 # user variables
 path_to_component_plist=''
 path_to_distribution_xml=''
+path_to_entitlements=''
 path_to_folder=''
 path_to_resources=''
 path_to_scripts=''
@@ -188,6 +195,7 @@ else
     notp="${10:-$notarization_profile}"
     dmg="${11:-$wrap_in_dmg}"
     cplt="${12:-$path_to_component_plist}"
+    entc="${13:-$path_to_entitlements}"
 
     # distribution mode: error handling
     if [[ -z "$fldr" ]]; then errpath; exit 1; fi
@@ -226,7 +234,12 @@ else
     while IFS= read -r -d '' app
     do
         echo "codesigning $app..."
-        if ! /usr/bin/codesign -s "$appsig" --timestamp --options runtime -f "$app"
+        csargs=(-s "$appsig" --timestamp --options runtime -f)
+        if [[ -n "$entc" ]]
+        then
+            csargs+=(--entitlements "$entc")
+        fi
+        if ! /usr/bin/codesign "${csargs[@]}" "$app"
         then
             errcsgn; exit 1
         fi

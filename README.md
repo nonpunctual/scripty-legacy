@@ -31,6 +31,7 @@ Helpful & unhelpful scripts.
 
 Some of my ideas in scripts & code aren't posted here. They're in posts on [nonpunctual.org](https://www.nonpunctual.org/):
 
+- [A Claude-work Orange](https://www.nonpunctual.org/posts/a-claude-work-orange/)
 - [A Haiku On Regular Expressions](https://www.nonpunctual.org/posts/a-haiku-on-regular-expressions/)
 - [A Light Unto My Xpath](https://www.nonpunctual.org/posts/a-light-unto-my-xpath/)
 - [Apple CIDR](https://www.nonpunctual.org/posts/apple-cidr/)

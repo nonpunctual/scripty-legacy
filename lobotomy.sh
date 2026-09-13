@@ -6,6 +6,7 @@
 # the session data in the excluded project dirs is kept, not deleted.
 
 
+
 # populate Claude Code project dir exclusions
 exclude_projects=(
     -Users-Shared-aeropuerto
@@ -14,8 +15,6 @@ exclude_projects=(
     -Users-Shared-network-health-extension
 )
 
-
-##### DO NOT MODIFY BELOW #####
 
 
 # wait for Claude Code to write state
