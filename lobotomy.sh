@@ -10,9 +10,9 @@
 # populate Claude Code project dir exclusions
 exclude_projects=(
     -Users-Shared-aeropuerto
-    -Users-Shared-rotten
     -Users-Shared-fleet-mcp-plus
     -Users-Shared-network-health-extension
+    -Users-Shared-rotten
 )
 
 

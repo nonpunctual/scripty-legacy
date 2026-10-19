@@ -29,10 +29,9 @@ then
 /bin/cat << 'EOF' > "$scptpth"
 #!/bin/sh
 
-dskusd="$(/usr/bin/osascript -l 'JavaScript' -e "var freeSpaceBytesRef=Ref(); $.NSURL.fileURLWithPath('/').getResourceValueForKeyError(freeSpaceBytesRef, $.NSURLVolumeAvailableCapacityForImportantUsageKey, null); Math.round(freeSpaceBytesRef[0].js / 1000000000)")"
+dskfsp="$(/usr/bin/osascript -l 'JavaScript' -e "var freeSpaceBytesRef=Ref(); $.NSURL.fileURLWithPath('/').getResourceValueForKeyError(freeSpaceBytesRef, $.NSURLVolumeAvailableCapacityForImportantUsageKey, null); Math.round(freeSpaceBytesRef[0].js / 1000000000)")"
 dsksiz="$(/usr/libexec/PlistBuddy -c 'print AllDisksAndPartitions:0:Size' /dev/stdin <<< "$(/usr/sbin/diskutil list -plist disk0)")"
-dskttl="$((dsksiz/1000000000))"
-dskpct=$(( dskusd * 100 / dskttl ))
+dskpct="$((dskfsp*100/(dsksiz/1000000000)))"
 
 if [ "$dskpct" -lt 10 ]
 then
