@@ -3,7 +3,7 @@
 # Upgrades fleetctl to the latest fleetdm/fleet GitHub release:
 # - looks up the latest release tag via GitHub API
 # - downloads the release fleetctl macOS .pkg to /private/tmp/
-# - installs then deletes the .pkg. installer
+# - installs then deletes the .pkg
 
 # operations
 if [ "$EUID" != 0 ]
