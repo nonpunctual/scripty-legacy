@@ -12,7 +12,7 @@
 # - IPv6: gateway, local address, external IP, ping (loss + RTT), if a gateway is present
 # - Wi-Fi: SSID, signal / noise
 # - DNS: search domain, resolution, reverse lookup, configured servers
-# - Proxy (http/https/socks): enabled, server, port
+# - Proxy (http/https/socks): enabled, server, port; PAC & auto-discovery: enabled, URL
 
 # Standard deviation (stddev in output) for RTT (packet round trip):
 

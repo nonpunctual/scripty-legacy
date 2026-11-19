@@ -1,7 +1,9 @@
 #!/bin/bash
 
 
-# Remove stale Internet Sharing network service entries from the SystemConfiguration preferences plist.
+# Deletes network services whose name contains any argument (case-insensitive) from the
+# SystemConfiguration preferences plist, then restarts configd. Handy for stale Internet
+# Sharing entries.
 #
 # Usage: sudo ./network.service.delete.sh <pattern> [pattern ...]
 #   e.g. sudo ./network.service.delete.sh iphone ipad belkin

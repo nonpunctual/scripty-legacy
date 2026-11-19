@@ -2,12 +2,12 @@
 
 
 
-# WARNING: This is a crazy thing to do. Enabling autologin is genrally considered bad.
+# WARNING: This is a crazy thing to do. Enabling autologin is generally considered bad.
 
-# It is specifcally recommended to be turned off in almost all security benchmarks like
+# It is specifically recommended to be turned off in almost all security benchmarks like
 # CIS. You should not enable it unless you have to & the conditions for the computer with
 # autologin enabled are safe. "Safe" in this context is subjective, but, consider examples
-# like the compuuter is: 
+# like the computer is: 
 # - locked in a lab with badged access
 # - installed in a server room or rack with badged access
 # - in use as a "kiosk" that is mounted in a way that's difficult to access
@@ -20,7 +20,7 @@
 # The autologin user account name & password are randomly generated. A Launch Daemon is 
 # installed to remove all accounts other than the autologin account after reboot
 
-# In order to erase a Mac using "Erase All Contents & Settings" an admin passowrd is 
+# In order to erase a Mac using "Erase All Contents & Settings" an admin password is 
 # required. Take note of the user account name & password for the created autologin user
 # when this script completes & store them safely.
 

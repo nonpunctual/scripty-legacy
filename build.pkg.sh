@@ -56,9 +56,10 @@
 # app's own build step already signed with entitlements (e.g. Location Services), since
 # this script's own re-sign otherwise silently drops them.
 
-# app-cert / developer-id (--distribution only): which identity to use when more than
-# one Developer ID Application / Installer certificate is in the keychain. Required if
-# the keychain has more than one of either.
+# developer-id is required in --component mode. In --distribution mode, app-cert &
+# developer-id are optional: if blank, the keychain's Developer ID Application / Installer
+# certificate is used, with a prompt for a SHA-1 when certificates from more than one
+# team are found.
 
 
 # user variables
@@ -85,6 +86,7 @@ wrap_in_dmg=''
 # errors
 errmode(){ printf '\nerror: first argument must be --component/-C or --distribution/-D\n' >&2; }
 errpath(){ printf '\nerror: missing path to folder\n' >&2; }
+errname(){ printf '\nerror: missing output name\n' >&2; }
 erridnt(){ printf '\nerror: missing package identifier\n' >&2; }
 errvers(){ printf '\nerror: missing package version\n' >&2; }
 errsign(){ printf '\nerror: missing signing identity\n' >&2; }
@@ -201,7 +203,7 @@ else
     if [[ -z "$fldr" ]]; then errpath; exit 1; fi
     if [[ -z "$idnt" ]]; then erridnt; exit 1; fi
     if [[ -z "$vers" ]]; then errvers; exit 1; fi
-    if [[ -z "$pkgp" ]]; then errpath; exit 1; fi
+    if [[ -z "$pkgp" ]]; then errname; exit 1; fi
 
     # match certs by SHA-1 fingerprint & team ID
     if ! resolve_cert 'Developer ID Application' codesigning "$appc"
